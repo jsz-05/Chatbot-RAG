@@ -1,0 +1,341 @@
+<title>DistributedSystemModels/Timelines.html</title>
+
+<!------------- Start Heading -------------------------------->
+<!DOCTYPE html>
+
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/w3css/4/w3.css">
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css?family=Roboto">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/lib/w3-theme-blue.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
+.w3-sidebar {
+  z-index: 3;
+  width: 250px;
+  top: 43px;
+  bottom: 0;
+  height: inherit;
+}
+/* Thick blue border */
+hr.new2 {
+  border: 2px solid blue;
+}
+/* blue border */
+hr.new1 {
+  border: 2px solid blue;
+}
+</style>
+
+
+<body>
+
+
+<div class="w3-top">
+<div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+  
+  <a class="w3-bar-item w3-button w3-right w3-hide-large
+  w3-hover-white w3-large w3-theme-l1"
+  href="javascript:void(0)"
+  onclick="w3_open()">
+  <i class="fa fa-bars"></i></a>
+
+  <a href="../index.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Distributed Algorithms
+  </a>
+
+  <a href="../table_of_contents.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Contents
+  </a>
+
+  <a href="../cross_reference.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Index
+  </a>
+    
+  </div>
+  </div>
+  
+  <script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+  
+<div class="w3-row w3-padding-64">
+<div class="w3-twothird w3-container">
+
+  <!--------------------------------------------------------------->
+  <h2 class="w3-text-teal">Past, Future and Cuts in Dataflow</h2>
+  <!--------------------------------------------------------------->
+  
+  <p class="w3-text-red">
+  This page introduces the concept of a <i>cut</i> of a dataflow
+  graph and relates a cut to the only notions of time -- past and
+  future -- in dataflow.
+
+  A cut separates past from future.
+
+  Cuts of dataflow are central to understanding detection algorithms
+  such as deadlock detection and for global snapshot algorithms that
+  determine states of distributed systems.
+  </p>
+
+  
+  <!--------------------------------------------------------------->
+  <h3 class="w3-text-teal">Cuts of a Dataflow Graph</h3>
+  <!--------------------------------------------------------------->
+  The only concept of time in dataflow is that of
+  <a href="DISTRIBUTED_SYSTEM_MODELS/Model.html">
+  before and after.<a>
+  
+  Recall that a vertex \(v\) is before a vertex \(w\) in the
+  dataflow graph exactly when there is a path from \(v\) to \(w\).
+  And \(w\) is after \(v\) exactly when \(v\) is before \(w\).
+
+  <hr class="new2">  
+  <p style="color:blue;">
+  A <i>cut</i> of a dataflow graph is a partition of the set of vertices of
+  the graph into subsets <code>past</code> and <code>future</code>
+  such that all steps before <code>past</code> steps are
+  <code>past</code> steps.
+  </p>
+  <hr class="new2"> 
+  
+  The cut requirement can also be specified as all steps after
+  <code>future</code> steps are <code>future</code> steps, or
+  equivalently as: There is no <code>past</code> step after a
+  <code>future</code> step. 
+
+  <p>
+  A cut of a dataflow graph is an instance of the general
+  <a href="https://en.wikipedia.org/wiki/Cut_(graph_theory)">cut of a
+  graph</a>, and more specifically a cut of a flow network where the
+  source is an initial vertex and the sink is a final vertex.
+
+    
+  <!--------------------------------------------------------------->
+  <h3 class="w3-text-teal">The State at a Cut</h3>
+  <!--------------------------------------------------------------->
+  The state of the system at a cut <code>(past, future)</code>
+  is specified by the labels of edges from
+  <code>past</code> to <code>future</code>.
+
+
+   
+  <!----------------------------------------------->
+  <p style="color:red;">Example</p>
+  
+  The top diagram of figure 1 shows a cut in which vertices in
+  <code>past</code> are 
+  colored red and vertices in <code>future</code> are green.
+
+  The curved black line is the boundary separating <code>past</code>
+  from <code>future</code>.
+
+  <figure>
+    <img src="Model/Model.005.jpeg"
+    alt="Fig1" style="width:100%"> 
+    <figcaption>Fig.1: Example - A Cut of a Dataflow Graph</figcaption>
+</figure>
+
+  In figure 1 all edges to <code>past</code> steps are from <code>past</code>
+  steps, and 
+
+  all edges from <code>future</code> steps are to <code>future</code>
+  steps.
+
+  <p>
+  The state <code>S*</code> after completion of <code>past</code> steps and before
+  initiation of 
+  <code>future</code> steps is given by the labels of
+  edges from <code>past</code> to <code>future</code>.
+
+  These are the
+  edges that cross the boundary line separating <code>past</code>
+  from <code>future</code>.
+
+  <p>
+  <code>S*</code> is
+  the final state of the sub-dataflow of <code>past</code> steps.
+
+  <code>S*</code> is also the initial state of the sub-dataflow of
+  <code>future</code> steps.
+
+<p>
+See the lower diagram in figure 1.
+<code>S*</code> is shown as final vertices (which are labeled
+<code>N</code>) of <code>past</code> dataflow, 
+ and <code>S*</code> is shown as as initial vertices (which
+  are labeled <code>0</code>) of <code>future</code> dataflow.
+  
+
+  
+ <!--------------------------------------------------------------->
+<h4 class="w3-text-teal">Cuts of Computations</h4>
+<!--------------------------------------------------------------->
+
+Associated with a computation is
+<a href="Computations.html">
+exactly one dataflow graph</a>
+consisting of the steps of the computation.
+
+We define a cut of a computation as a cut of the dataflow of the
+computation.
+
+<p>
+
+
+
+
+ <!--------------------------------------------------------------->
+<h3 class="w3-text-teal">Properties of Cuts</h3>
+<!--------------------------------------------------------------->
+The proofs of these properties are straigtforward and are given
+<a href="TimelinesProofs.html">here.</a>
+
+
+<!------------------------------------->
+<h5 class="w3-text-teal">Dataflows of Past steps before Future
+steps.</h5> 
+
+Given a cut <code>(past, future)</code> of a dataflow graph:
+  There exists exists a
+dataflow consisting only of <code>past</code> steps, and there
+exists exists a dataflow consisting only of <code>future</code>
+steps.
+
+
+<!------------------------------------->
+<h5 class="w3-text-teal">Computations of Past before Future.</h5> 
+
+<p>
+Let computation \(X\) start in state \(S_{init}\) and end in state
+\(S_{fini}\).
+
+Let \(S^{*}\) be the state at a cut <code>(past, future)</code> of \(X\).
+
+There exists a computation \(Y\) that starts in \(S_{init}\), visits
+\(S^{*}\), and ends in \(S_{fini}\).
+
+<p>
+All steps in <code>past</code> are
+executed before all steps in <code>future</code> in \(Y\).
+
+
+<h5 class="w3-text-teal">Cut based on Message is Received only after
+it is Sent</h5>
+
+There exists a cut <code>(past, future)</code> exactly when the
+following two conditions hold:
+<ol>
+  <li>
+  Every message received in <code>past</code> is sent in
+  <code>past</code>.
+  </li>
+  <li>
+  If a step \(x\) of an agent is in <code>past</code> then steps at
+  that agent before \(x\) are also in <code>past</code>.
+  </li>
+</ol>
+
+<h5 class="w3-text-teal">Cut based on Counts of Messages Sent and Received</h5>
+A version of this property that uses only counts of messages is used
+in termination detection and is as follows.
+
+<p>
+There exists a cut <code>(past, future)</code> exactly when the
+following two conditions hold:
+
+<ol>
+  <li>
+  For all \(C\):  \(\; C_{s} \geq C_{r}\),
+  <p>
+  where
+  \(C_{s}\) and \(C_{r}\) are the numbers of messages sent and
+  received, respectively, on channel \(C\), in <code>past</code>.
+  </li>
+  <li>
+  If a step \(x\) of an agent is in <code>past</code> then steps at
+  that agent before \(x\) are also in <code>past</code>.
+  </li>
+</ol>
+
+
+
+<!-------------------------------------------------->
+<h5 class="w3-text-teal">Computations through Increasing Cuts</h5>
+
+Let \(S_{i}\) be the state at a cut <code>(past</code>\(_{i}\) <code>,
+future</code>\(_{i}\)), for \(i = 0, 1, \ldots\) where:
+<p>
+For all \(i\): <code> past</code>\(_{i}\) \(\subseteq\) <code>past</code>\(_{i+1}\),
+
+<p>
+There exists a computation that visits states
+\(S_{i}\) in increasing order of \(i\).
+
+
+
+
+<!---------------------------------------->
+<h5 class="w3-text-teal">Next</h5>
+<!---------------------------------------->
+The properties of cuts in dataflow, and the concepts of before - after,
+past - future are central for 
+<a href="../ChannelSnapshots/ChannelSnapshots.html">algorithms by
+which agents record the 
+states of distributed systems</a> discussed in the next chapter.
+
+<!--Start Footer--------------------------------------->
+
+    <hr class="new1">
+      <p>K. Mani Chandy,
+      Emeritus Simon Ramo Professor,
+      California Institute of Technology</p>
+    
+</footer>
+    
+
+
+<!-- END MAIN -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+</script>
+
+</body>
+</html>

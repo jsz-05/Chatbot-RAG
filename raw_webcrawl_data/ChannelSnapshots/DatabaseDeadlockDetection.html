@@ -1,0 +1,401 @@
+
+<!------------- Start Heading -------------------------------->
+<!DOCTYPE html>
+
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/w3css/4/w3.css">
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css?family=Roboto">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/lib/w3-theme-blue.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
+.w3-sidebar {
+  z-index: 3;
+  width: 250px;
+  top: 43px;
+  bottom: 0;
+  height: inherit;
+}
+/* Thick blue border */
+hr.new2 {
+  border: 2px solid blue;
+}
+/* blue border */
+hr.new1 {
+  border: 2px solid blue;
+}
+</style>
+
+
+<body>
+
+
+<div class="w3-top">
+<div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+  
+  <a class="w3-bar-item w3-button w3-right w3-hide-large
+  w3-hover-white w3-large w3-theme-l1"
+  href="javascript:void(0)"
+  onclick="w3_open()">
+  <i class="fa fa-bars"></i></a>
+
+  <a href="../index.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Distributed Algorithms
+  </a>
+
+  <a href="../table_of_contents.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Contents
+  </a>
+
+  <a href="../cross_reference.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Index
+  </a>
+    
+  </div>
+  </div>
+  
+  <script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+  
+<div class="w3-row w3-padding-64">
+<div class="w3-twothird w3-container">
+  
+    <!--------------------------------------------------------->
+  <h2 class="w3-text-teal">Detecting Database Deadlocks</h2>
+
+  
+  <!------------------------------------------------------------------->
+  <p class="w3-text-red">
+  A database deadlock occurs when each agent in a cycle remains
+  waiting forever for a resource held and required by the next agent
+  in the cycle. 
+
+  A database deadlock detection algorithm is executed by the operating
+  system to determine whether there exists a cycle of deadlocked agents.
+
+  </p>
+  
+  <h3 class="w3-text-teal">The Problem</h3>
+
+  <p>
+  The problem described here is a simplification of the database
+  deadlock problem.
+
+  The simplification focuses on the essentials of the problem.
+
+  <p>
+  Agents in a system share a set of indivisible resources.
+
+  An example of such a resource is exclusive access to a file.
+
+  <p>
+  A deadlock arises when there is a cycle of agents,
+  \([x_{0}, x_{1}, \ldots, x_{n-1}, x_{0}]\) where for all \(i\):
+  <ol>
+    <li>
+    agent \(x_{i}\) holds a resource \(r_{i}\), and
+    </li>
+    <li>
+    agent \(x_{i}\) requires resources \(r_{i}\) and \(r_{(i+1)}\) to
+    continue executing.
+    </li>
+  </ol>
+
+  
+    (Operations on indices of agents are taken mod \(n\) and \(n >
+    1\).) 
+
+  <!-------------------------------------------------->
+  <h3  style="color:red;">Example</h3>
+  <!-------------------------------------------------->
+  
+  In the example, a resource is identified by its color.
+  
+  A system has one red, one blue, and one green resource.
+  
+  Agents \(x\), \(y\) and \(z\) are deadlocked in the following
+  state.
+  <ol>
+    <li>
+  Agent \(x\) requires the red and blue resources to continue
+    executing; \(x\) is holding the red resource and is waiting to
+    acquire the blue resource.
+    </li>
+    <li>
+  Agent \(y\) requires the blue and green resources to continue
+    executing; \(y\) ; is holding the blue resource and is waiting to
+    acquire the green resource.
+    </li>
+    <li>
+  Agent \(z\) requires the green and red resources to continue
+  executing; \(z\) holds the green resource and is waiting to acquire
+    the red resource.
+    </li>
+  </ol>
+    
+    <figure>
+  <img
+    src="DatabaseDeadlockDetection/DatabaseDeadlockDetection.002.jpeg"
+    alt="Fig2" style="width:100%">
+  <figcaption>Fig.2 - An Example of a Deadlock</figcaption>
+</figure>
+
+ 
+  <!----------------------------------------------------------------------------->
+  <h3 class="w3-text-teal">How Should You Solve the Problem?</h3>
+  <!----------------------------------------------------------------------------->
+  
+  <p class="w3-text-teal">Strategy</p>
+
+  A strategy to solve detection problems is to start with the
+  <a href="ChannelSnapshots.html">general detection algorithm</a> and
+  then explore optimizations by using
+  <a href="../DISTRIBUTED_SYSTEM_MODELS/Timelines.html">
+  properties of cuts.</a>
+  
+  <p>
+  In the general detection algorithm, an observer gets global snapshots and
+  determines if there is a cycle of waiting agents in the snapshot.
+
+  Algorithms for determining cycles are found
+  <a href="https://en.wikipedia.org/wiki/Cycle_(graph_theory)">here</a>.
+
+  <p>
+  Next let's explore
+  <a href="ChannelSnapshots.html">
+  optimizations
+  </a>;
+  see "Detection without Observers: Distributed Algorithms on Local
+  Snapshots."
+
+  The optimized algorithm has two phases: (1) First a global snapshot
+  algorithm is executed. (2) After the global snapshot algorithm
+  terminates a distributed detection algorithm is executed on
+  the local snapshots recorded by the global snapshots.
+
+  <p>
+  The two phases can be merged for some problems, including this one.
+
+
+
+
+  <!----------------------------------------------------->
+  <h4 class="w3-text-teal">
+  A Distributed Algorithm to Detect a Cycle of
+  Waiting Agents
+  </h4>
+  <!----------------------------------------------------->
+
+  <p>
+  Multiple detection algorithms and global snapshot algorithms may
+  execute concurrently.
+  
+  These algorithms are disambiguated by tagging each algorithm with
+  the initiator and a sequence id.
+
+  Next we describe a single detection algorithm which is executed after 
+  a single global snapshot algorithm terminates.
+
+  <p class="w3-text-teal">Local Constants</p>
+  In the detection algorithm, 
+each agent <code>v</code> has the following local constants:
+<ol>
+  <li> <code>v.waits</code> is the set
+  of resources that <code>v</code> has to acquire from other agents to start
+  execution.
+  </li>
+  <li>
+  <code>v.holds</code> is the set of resources that <code>v</code>
+  holds and must continue to hold
+  to start execution.
+  </li>
+</ol>
+
+<p style="color:red;">Example</p>
+In the example of the figure:
+<br>
+<code>x.waits = {blue}, x.holds = {red}</code>
+<br>
+<code>y.waits = {green}, y.holds = {blue}</code>
+<br>
+<code>z.waits = {red}, y.holds = {green}</code>
+  
+<p>
+<code>v.waits</code> and <code>v.holds</code> are constant for all <code>v</code> in the
+detection algorithm  because these values are
+specified in the global snapshot.
+
+
+  <p class="w3-text-teal">Messages</p>
+  The algorithm to detect waiting cycles is similar to the global
+  snapshot algorithm.
+
+Instead of the <code>marker</code> message used in global snapshots, a
+message in the detection identifies the set
+of resources for which the sender of the message is waiting.
+
+<p>
+Each message <code>m</code> sent by an agent <code>v</code> has a
+field <code>m.waits</code> where:
+<center><code>m.waits</code> = <code>v.waits</code>.</center>
+
+  <p class="w3-text-teal">Initiating the Algorithm</p>
+  A waiting agent <code>u</code> initiates the algorithm by sending a message
+  <code>m</code> on each of its output channels where
+  <code>m.waits</code> = <code>u.waits</code>.
+  
+ <p class="w3-text-teal">Action by an Agent other than the
+Initiator</p>
+
+<p>
+When an agent <code>v</code> receives a message <code>m</code>:
+<ol>
+  <li>
+  If <code>v</code> has already sent messages then <code>v</code> takes no
+  action.
+  </li>
+  <li>
+  If <code>v</code> has not sent messages, and if there is a resource
+  common to <code>m.waits</code> and <code>v.holds</code> then
+  <code>v</code> sends a  message <code>m'</code> on each of its
+  output channels where <code>m'.waits</code> = <code>v.waits</code>.
+  </li>
+</ol>
+
+<p class="w3-text-teal">Cycle Detection</p>
+If the initiator <code>u</code> receives a message <code>m</code>
+where there is a resource common to <code>m.waits</code> and
+<code>u.holds</code> then <code>u</code> detects a cycle of waiting
+agents.
+
+<h4 class="w3-text-teal">Proof of Correctness</h4>
+The proof outline is as follows.
+
+An agent <code>v</code> sends messages only if there is a path of waiting
+processes from <code>u</code> to <code>v</code>.
+
+So, <code>u</code> detects a cycle of waiting processes only if there
+exists a cycle of waiting processes.
+
+<p>
+If there exists a cycle of waiting processes from <code>u</code>  to
+<code>u</code>  then 
+messages are sent along one such cycle, and so
+<code>u</code> detects a cycle.
+
+<p>
+The algorithm terminates because it sends at most one message on each
+channel. 
+
+
+
+
+<!----------------------------------->
+<h4 style="color:red;">Example</h4>
+<!----------------------------------->
+
+This example shows steps in the case of the cycle of waiting processes shown in
+figure 2.
+
+The algorithm is initiated by agent <code>x</code> by broadcasting a
+message <code>m</code> where <code>m.waits = x.waits = {blue}</code>.
+
+<p>
+
+When <code>y</code> receives a message <code>m</code> where
+<code>m.waits = {blue}</code>, there is a resource in both <code>m.waits</code> and
+<code>y.holds</code>, and so <code>y</code> broadcasts message
+<code>m'</code> where <code>m'.waits = y.waits = {green}</code>.
+
+<p>
+When <code>z</code> receives a message <code>m</code> where
+<code>m.waits = {blue}</code>, <code>z</code> takes no action because
+there is no resource in both <code>m.waits</code> and
+<code>z.holds</code>.
+
+
+<p>
+When <code>z</code> receives a message <code>m</code> where
+<code>m.waits = {green}</code>, <code>z</code> broadcasts message
+<code>m'</code> where <code>m'.waits = z.waits = {red}</code>.
+
+
+<p>
+When the initiator <code>x</code> receives a message <code>m</code> where
+<code>m.waits = {red}</code>, <code>x</code> detects a deadlock
+because there is a resource common to <code>m.waits</code> and
+<code>x.holds</code>. 
+
+<h5 class="w3-text-teal">Combining Cycle Detection and Snapshot
+Algorithms</h5>
+
+We can use a a marker in the snapshot algorithm as a message in cycle
+detection.
+
+Modify a marker <code>m</code> to have the field
+<code>m.waits</code> used in cycle detection.
+
+Then the snapshot algorithm is the same as the cycle detection
+algorithm except that the snapshot algorithm records states of
+channels which are not used in cycle detection.
+
+<p>
+Write the algorithm for the combined algorithm as an exercise.
+
+
+<!--Start Footer--------------------------------------->
+
+    <hr class="new1">
+      <p>K. Mani Chandy,
+      Emeritus Simon Ramo Professor,
+      California Institute of Technology</p>
+    
+</footer>
+    
+
+
+<!-- END MAIN -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+</script>
+
+</body>
+</html>

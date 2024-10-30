@@ -1,0 +1,546 @@
+<title>ChannelSnapshots/ChannelSnapshots.html</title>
+
+<!------------- Start Heading -------------------------------->
+<!DOCTYPE html>
+
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/w3css/4/w3.css">
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css?family=Roboto">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/lib/w3-theme-blue.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
+.w3-sidebar {
+  z-index: 3;
+  width: 250px;
+  top: 43px;
+  bottom: 0;
+  height: inherit;
+}
+/* Thick blue border */
+hr.new2 {
+  border: 2px solid blue;
+}
+/* blue border */
+hr.new1 {
+  border: 2px solid blue;
+}
+</style>
+
+
+<body>
+
+
+<div class="w3-top">
+<div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+  
+  <a class="w3-bar-item w3-button w3-right w3-hide-large
+  w3-hover-white w3-large w3-theme-l1"
+  href="javascript:void(0)"
+  onclick="w3_open()">
+  <i class="fa fa-bars"></i></a>
+
+  <a href="../index.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Distributed Algorithms
+  </a>
+
+  <a href="../table_of_contents.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Contents
+  </a>
+
+  <a href="../cross_reference.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Index
+  </a>
+    
+  </div>
+  </div>
+  
+  <script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+  
+<div class="w3-row w3-padding-64">
+<div class="w3-twothird w3-container">
+
+
+
+<!--------------------------------------------------------->
+<h1 class="w3-text-teal">A Global Snapshot Algorithm</h1>
+<!--------------------------------------------------------->
+
+
+  
+  <!------------------------------------------------------------------->
+  
+  <p class="w3-text-red">
+  A global snapshot algorithm records a state of the system that can
+  occur during a computation.
+
+  The state obtained by the algorithm is called a global snapshot.
+
+  Systems are monitored by taking repeated global snapshots.
+
+  When a transient error is detected, a rollback and recovery
+  algorithm restarts the computation from the most recent snapshot
+  instead of starting it from the initial state.
+
+  
+
+  
+
+  </p>
+ 
+  <!-----------------------------------------------------------------------------> 
+  <h4 class="w3-text-teal">Global Snapshot</h4> 
+  <!----------------------------------------------------------------------------->
+  <p>
+  A global snapshot algorithm records a state of the system that
+  occurs during a computation of the system.
+
+  A state obtained by the algorithm is called a global snapshot.
+
+  <p>
+  A state of the system is a tuple with an element of the tuple for each agent and
+  each channel.
+
+  A system state is also called a global state to distinguish it from
+  states of agents and states of channels.
+  
+
+  <p>
+  An algorithm to record the state of a system is not instantaneous
+  because the algorithm records the states of multiple agents and
+  channels.
+
+  The algorithm starts at some point and terminates at a later point.
+
+  A global snapshot is a state that occurs in a computation from the
+  state in which the algorithm starts to the state in which the algorithm ends.
+
+  <p>
+  The global snapshot algorithm is an example of an algorithm that is
+  executed by a distributed operating system (OS) on behalf of a
+  client.
+
+  Next, we describe features of the OS that are relevant to the
+  snapshot algorithm.
+
+  <!-----------------------------------------------------------------------------> 
+  <h4 class="w3-text-teal">A Distributed Operating System</h4>
+  <!-----------------------------------------------------------------------------> 
+  
+  
+  Each client agent has an OS agent that supervises it.
+
+  OS agents use the same processors and channels as clients do.
+  
+  OS agents can record, but not modify, states of their clients.
+  
+  OS agents can send and receive OS messages that are not seen
+by clients.
+
+<p>
+Figure 1 is a representation of two OS agents that manage their
+client agents.
+
+Messages sent by a client are recorded by the OS and passed through
+to destination clients.
+
+The OS sends messages on the same channels as clients, but the OS
+traps these messages so that the client does not see them.
+
+
+<figure>
+    <img src="ChannelSnapshots/ChannelSnapshots.001.jpeg" alt="Fig1"
+    style="width:60%"> 
+    <figcaption>Fig.1: OS and Clients use the same Channels</figcaption>
+</figure> 
+
+  <p>
+  Execution of an OS agent on a processor may delay a client's
+  steps on the same processor, and thus change the order in which the
+  client's steps are executed. 
+
+<i>The OS may change a client's computation -- the order of steps -- but
+the OS must not change the client's dataflow.</i>
+  
+  <p>
+  One way to record a global snapshot is for the OS to stop a client
+  computation, then take a global snapshot, and then  restart the
+client computation.
+
+Our goal is to design an algorithm that does not stop the client.
+
+<p>
+Hereafter, when we refer to an agent we mean an OS agent.
+
+Likewise, by messages we mean those that are sent and received by the
+OS.
+
+
+<p>
+Next, let's develop OS agents and OS messages to record a global
+snapshot.
+
+
+<!----------------------------------------------------------------------------->
+<h4 class="w3-text-teal">The Problem</h4>
+<!----------------------------------------------------------------------------->
+ 
+<p>
+Let \(S_{init}\) and \(S_{fini}\) be the states in which the
+algorithm starts and finishes, respectively.
+
+Design an algorithm that records a state \(S^{*}\) such that
+there exists a computation that starts at \(S_{init}\), then visits
+\(S^{*}\) and then visits \(S_{fini}\).
+
+
+<!----------------------------------------------------------------------------->
+<h4 class="w3-text-teal">How Should You Solve the Problem?</h4>
+<!----------------------------------------------------------------------------->
+
+
+<p class="w3-text-teal">Strategy</p>
+A general strategy for designing algorithms dealing with intermediate
+states is to find a helpful <a href="../DISTRIBUTED_SYSTEM_MODELS/Timelines.html">
+property of cuts</a>.
+
+What property helps to determine \(S^{*}\)?
+
+<p>
+The property "Computations of Past before Future," given below, tells
+us that \(S^{*}\) can be the state at any cut.
+
+<!------------------------------------->
+<p class="w3-text-teal">Computations of Past before Future.</p> 
+
+<p>
+Let computation \(X\) start in state \(S_{init}\) and end in state
+\(S_{fini}\).
+
+Let \(S^{*}\) be the state at a cut <code>(past, future)</code> of \(X\).
+
+There exists a computation \(Y\) that starts in \(S_{init}\), visits
+\(S^{*}\), and ends in \(S_{fini}\).
+
+<p>
+Using this strategy, our tasks reduce to (1) identifying a cut, and
+(2) recording the state, \(S^{*}\), at the cut.
+
+<h5 class="w3-text-teal">Identifying a Cut</h5>
+Each agent has to record its own state because an agent's state is not
+accessible to other agents.
+
+The state of an agent that it records is called a <i>local snapshot</i>.
+
+<p>
+Define <code>past</code> as the set of steps at each agent before the
+agent takes its local snapshot, and
+define <code>future</code> as the set of steps at each agent after the
+agent takes its local snapshot.
+So, if a step \(x\) at an agent is in <code>past</code> then all steps
+at that agent before \(x\) are also in <code>past</code>.
+
+<p>
+Let's use
+<a href="../DISTRIBUTED_SYSTEM_MODELS/Timelines.html"> the following property of
+<code>past</code>, <code>future</code> and cuts:</a>
+<p>
+The partition <code>(past, future)</code> is a cut exactly when every
+message received in <code>past</code> is sent in <code>past</code>.
+
+<p>
+Therefore, <code>(past, future)</code> is a cut exactly when:
+<hr class="new2">
+<p style="color:blue;">Global Snapshot Rule</p>
+<p style="color:blue;">
+Each message received before the receiver takes its local snapshot
+is sent before the sender takes its local snapshot.
+<p>
+<hr class="new2">
+
+Design an algorithm yourself before reading further, and compare your
+algorithm with the one given below.
+
+
+
+<!----------------------------------------------------------------------------->
+<h4 class="w3-text-teal">The Global Snapshot Algorithm</h4>
+<!----------------------------------------------------------------------------->
+
+A special OS message called a <code>marker</code> is used to distinguish
+pre-snapshot from post-snapshot messages.
+
+Messages sent on a channel before a <code>marker</code> is sent on the
+channel are messages sent in the <code>past</code> -- i.e. before the
+sender takes its local snapshot -- and messages sent
+after the marker are sent in the <code>future</code>.
+
+<p class="w3-text-teal">The algorithm</p>
+<ol>
+  <li>
+  The algorithm begins by one or more agents taking their local
+  snapshots.
+  </li>
+  <li>
+  When an agent takes its local snapshot it sends a marker on each
+  of its outgoing channels. 
+  </li>
+  <li>
+  When an agent receives a marker, the agent takes its local snapshot
+  if it has not already done so. 
+  </li>
+  <li>
+  The snapshot of a channel is the sequence of messages received on
+  the channel after the receiver takes its snapshot and before the
+  receiver receives a marker on the channel.
+  </li>
+</ol>
+
+<h5 class="w3-text-teal">Proof of correctness</h5>
+
+<p>
+
+From rule 3, each message received by an agent \(r\) on a channel
+\(c\) before \(r\) takes its 
+local snapshot is a message received by \(r\) before \(r\) receives a
+marker on channel \(c\).
+
+<p>
+Because channels are first in first out, each message received by
+ \(r\) on \(c\) before \(r\) receives a
+marker on \(c\) is sent on \(c\) before a marker is
+sent on \(c\).
+
+<p>
+From rule 2 each message sent on \(c\) before a marker is sent on
+\(c\) is sent before the sender takes its local snapshot.
+
+<p>
+From the three paragraphs above it follows that the global snapshot
+rule holds for the algorithm.
+
+
+<p class="w3-text-teal">Proof about States of Channels</p>
+The messages in a channel at the cut are the
+messages sent in <code>past</code> and received in <code>future</code>.
+These are messages sent before the sender takes its snapshot and
+received after the receiver takes its snapshot.
+
+So, the state of a channel is the sequence of
+messages received along the channel after the receiver takes its
+snapshot and before the receiver receives a marker along the channel.
+
+<p>
+Note: If an agent takes its local snapshot when it receives a marker
+along a channel, then the snapshot of the channel is the empty
+sequence of messages.
+
+<!---------------------------------------------------->
+<h5 class="w3-text-teal">Termination of the Algorithm</h5>
+
+After any agent \(v\) initiates the algorithm, all agents that are
+reachable from \(v\) will receive a marker and take their local
+snapshots.
+
+If every agent is reachable from an initiator then all agents take
+local snapshots. 
+
+<p>
+Each agent takes its local snapshot at most once.
+
+So, a marker is sent on a channel at most once.
+
+The computation terminates when all markers are received.
+
+<!---------------------------------------------------->
+<h5 class="w3-text-teal">Collecting Local Snapshots to form Global
+Snapshots</h5>
+One way to collect local snapshots is to have an OS agent act as an
+observer.
+
+Each agent sends its local snapshots to the observer which puts the
+local snapshots together to form the global snapshots.
+
+Successive snapshots are disambiguated by using sequence numbers or
+timestamps.
+
+<p>
+Some algorithms carry out distributed computations on local snapshots
+without using an observer to collect local snapshots.
+
+Later, we give examples of such algorithms.
+
+
+
+<!---------------------------------------------------->
+<h3 class="w3-text-teal">Applications of Global Snapshots</h3>
+
+<h4 class="w3-text-teal">System Monitoring</h4>
+Systems can be monitored by taking global snapshots repeatedly.
+
+Let \(S_{0}, S_{1}, S_{2}, \ldots, \) be the sequence of states
+recorded by the system.
+
+From the property
+<a href="DISTRIBUTED_SYSTEM_MODELS/Timelines.html">
+Computations through Increasing Cuts
+</a>
+there exists a computation that visits each state \(S_{i}\) in order
+of increasing \(i\).
+
+The system monitor checks the sequence of snapshots to determine if
+some action is required.
+
+
+<h4 class="w3-text-teal">Rollback and Recover</h4>
+
+
+Let \(S^{*}\) be the most recent snapshot recorded by a system monitor.
+
+From the property,
+<a href="../DISTRIBUTED_SYSTEM_MODELS/Timelines.html">
+"Computations of Past before Future"</a>
+there exists a computation that starts at the initial state and later
+visits \(S^{*}\).
+
+So, if an error is detected in a computation then the computation can be
+restarted from \(S^{*}\) rather than rolling all the way back to the
+initial state. 
+
+
+
+<h4 class="w3-text-teal">Detecting Stable Predicates</h4>
+
+A <i>stable predicate</i> is a predicate with the following property: If the
+predicate holds at any point in any computation then it continues to
+hold forever thereafter in that computation. Equivalently, if a stable
+predicate holds in a state \(s\) then it holds in all states reachable
+from \(s\).
+
+<p>
+Examples of stable predicates are: "The computation has
+terminated," and "The computation is deadlocked."
+
+If a computation has terminated at some point then it remains 
+terminated.
+
+Likewise if a computation has deadlocked then it remains deadlocked.
+
+<h5 class="w3-text-teal">Specification of Detection Algorithms</h5>
+An algorithm to detect a stable property \(P\) has the following
+specification.
+<ol>
+  <li>
+  If \(P\) holds when the algorithm is initiated then the algorithm
+  detects that \(P\) holds.
+  </li>
+  <li>
+  If the algorithm detects that \(P\) holds then \(P\) holds when the
+  algorithm terminates.
+  </li>
+</ol>
+
+
+<h5 class="w3-text-teal">General Detection Algorithms</h5>
+A general solution is for the operating system to monitor a client
+computation by taking repeated snapshots of the computation.
+
+The OS checks whether a specified stable property holds in each
+snapshot.
+
+From the property,
+<a href="../DISTRIBUTED_SYSTEM_MODELS/Timelines.html">
+"Computations of Past before Future"</a>
+this general solution satisfies the specification of detection
+algorithms. 
+
+<p class="w3-text-teal">Detection with Observers</p>
+The OS uses an agent, the observer, to collect local snapshots and
+form a global snapshot.
+
+The observer inspects the global snapshot to determine if the property
+holds in the snapshot.
+
+
+The OS can also use multiple observers each of which collects
+local information from subnetworks; the OS then carries out a
+distributed algorithm on its collection of observers.
+
+<p>
+The OS can also execute a distributed algorithm on local
+snapshots without having observers collect local information, as
+described next.
+
+
+<!-------------------------------------------------------->
+<p class="w3-text-teal">Detection without Observers: Distributed
+Algorithms on Local Snapshots</p>
+
+Distributed algorithms on local snapshots operate in two phases.
+
+In the first phase a global snapshot algorithm is executed.
+
+The local snapshot of each agent and its incoming channels are stored
+locally, at the agent, without sending the information to observers.
+
+<p>
+In the second phase a distributed algorithm is executed to determine
+if the local information stored at agents satisfies a specified global
+property, such as "computation has deadlocked."
+
+The algorithm in the second phase operates on unchanging data.
+
+These algorithms are often distributed graph algorithms.
+
+
+<p>
+The two phases can be executed concurrently in many applications.
+
+
+
+
+<h4 class="w3-text-teal">Next</h4>
+
+<p>
+A code skeleton of the algorithm and examples of the global snapshot
+algorithm are provided
+<a href="ChannelSnapshotDetails.html">here</a>.
+
+Next  
+<a href="LogicalClocks.html">logical clocks</a>.
+
+  
+<!--Start Footer--------------------------------------->
+
+    <hr class="new1">
+      <p>K. Mani Chandy,
+      Emeritus Simon Ramo Professor,
+      California Institute of Technology</p>
+    
+</footer>
+    
+
+
+<!-- END MAIN -->
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,483 @@
+<title>Byzantine/ByzantineWritten.html</title>
+<!------------- Start Heading -------------------------------->
+<!------------- Start Heading -------------------------------->
+<!DOCTYPE html>
+
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/w3css/4/w3.css">
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css?family=Roboto">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/lib/w3-theme-blue.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
+.w3-sidebar {
+  z-index: 3;
+  width: 250px;
+  top: 43px;
+  bottom: 0;
+  height: inherit;
+}
+/* Thick blue border */
+hr.new2 {
+  border: 2px solid blue;
+}
+/* blue border */
+hr.new1 {
+  border: 2px solid blue;
+}
+</style>
+
+
+<body>
+
+
+<div class="w3-top">
+<div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+  
+  <a class="w3-bar-item w3-button w3-right w3-hide-large
+  w3-hover-white w3-large w3-theme-l1"
+  href="javascript:void(0)"
+  onclick="w3_open()">
+  <i class="fa fa-bars"></i></a>
+
+  <a href="../index.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Distributed Algorithms
+  </a>
+
+  <a href="../table_of_contents.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Contents
+  </a>
+
+  <a href="../cross_reference.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Index
+  </a>
+    
+  </div>
+  </div>
+  
+  <script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+  
+<div class="w3-row w3-padding-64">
+<div class="w3-twothird w3-container">
+
+
+  
+    <!--------------------------------------------------------->
+    <h1 class="w3-text-teal">Byzantine Consensus: Written
+Messages</h1>
+
+<h4 class="w3-text-teal">
+This module introduces Byzantine consensus algorithms in which agents
+reach consensus in a sequence of synchronized rounds <i>even though some
+agents don't follow the protocol</i>.
+</h4>
+
+
+    In this module we study algorithms by which a collection of agents
+    reach a consensus among alternative values.
+    <a href="../Paxos/Paxos.html">The Paxos algorithm</a> is
+    an example of how agents reach consensus.
+    <a
+    href="https://en.wikipedia.org/wiki/Consensus_(computer_science)">
+    Agents cannot reach consensus if message delays or agent
+    operations are arbitrarily slow.</a> Next, we study a consensus
+    algorithm in which message delays are bounded and in which agents
+    are guaranteed to come to a consensus <i>even though some agents
+    do not follow the protocol.</i>
+
+    <p>
+    The algorithm operates in a sequence of steps called <i>rounds</i>.
+    All messages sent in a round are delivered in the next round.
+    Agents execute actions in each round after receiving
+    messages sent in the previous round; these actions may include
+    sending messages. So, the Byzantine algorithm is synchronous.
+
+    
+
+    <h3 class="w3-text-teal">Byzantine Generals Problem: Overview</h3>
+    A general has \(N\) army units each of which is led by a
+    lieutenant general, herafter referred to merely as lieutenant. We
+    refer to the general and the lieutenants, collectively, as
+    agents. An agent may be either loyal or disloyal. A loyal general
+    gives the same command to all lieutenants. A loyal general's
+    command is either <i>attack</i> or <i>retreat</i>.  A disloyal
+    general may give different commands to different lieutenants and
+    may give no commands to some. The lieutenants receive commands
+    from the general and then communicate among themselves to reach a
+    consensus.  Loyal lieutenants follow an algorithm while disloyal
+    lieutenants may or may not.
+    <p>
+    The figure below illustrates the difference between loyal and
+    disloyal generals.
+
+    <figure>
+    <img src="Slide01.jpg" alt="Fig1" style="width:100%">
+    <figcaption>Fig.1: Loyal and disloyal general behavior</figcaption>
+    </figure>
+
+ 
+
+
+    <h4 class="w3-text-teal">Byzantine Generals Problem:
+Specification</h4>
+
+<p>
+  A loyal general sends attack messages to all lieutenants or sends
+retreat messages to all lieutenants.
+
+A disloyal general sends arbitrary messages to lieutenants.
+
+    <ol>
+      <li><i>Validity</i>: Loyal lieutenants must obey a loyal general. If a loyal general
+    gives the command to attack then all loyal lieutenants must
+    attack. Likewise, if a loyal general
+    gives the command to retreat then all loyal lieutenants must
+    retreat.</li>
+      <li><i>Consensus</i>: Loyal lieutenants come to a consensus: either all of them
+    attack or all of them retreat.</li>
+  </ol>
+
+  <p>
+  
+    The specification does not require that traitors be
+    discovered. For example, the algorithm doesn't have to determine
+    whether the general or a lieutenant is loyal or disloyal.
+
+    <p>
+    If the only requirement is validity, and consensus isn't
+    required, then the solution is trivial: all loyal lieutenants obey
+    the general whether the general is loyal or disloyal. If the only
+    requirement is consensus then the
+    solution is trivial: all loyal lieutenants agree on a predefined
+    value, say retreat, regardless of the command issued by the
+    general. The conjunction of both requirements makes the problem
+  difficult.
+
+  
+    <h4 class="w3-text-teal">Oral and Written Messages</h4>
+  There are two versions of the problem.
+
+  <ol>
+    <li>
+    <i>Written Messages</i>:
+    In this version an agent may send copies of messages that it
+    receives to other agents but cannot modify the
+    messages. Also, an agent cannot forge signatures. So, an agent can
+    receive a message M signed by lieutenant \(A\) only if \(A\) sent M to
+    some agent.
+    </li>
+    <li>
+    <i>Oral Messages</i>:
+    In this version an agent can modify messages and forge
+    signatures.So, an agent can receive a message M signed by agent
+    \(A\) even if \(A\) never sent M to any agent.
+    </li>
+  </ol>
+  The algorithm for written messages is simpler and requires fewer
+    messages.
+
+
+    <h2 class="w3-text-teal">Algorithm with Written Messages</h2>
+
+  <p>
+A reliable lieutenant who does not get a message from in round 0 treats the
+absence of the message as the same as receiving a retreat message.
+  Likewise, if a loyal lieutenant gets a message that is not an attack
+  or a retreat message then the lieutenant treats the message as a
+  retreat message.
+
+  (We use retreat as a default. We could just as well have used attack
+  as the default.)
+
+  <p>
+  Next, we give an overview of the algorithm.
+
+  <h5 class="w3-text-teal">Commit to Attack</h5>
+  At each round in the algorithm, a loyal lieutenant has either
+  committed to attack or not.
+
+  A lieutenant that has not committed to attack on a round may commit
+  to attack on a later round.
+
+  If any loyal lieutenant commits to attack in any round then it remains
+  committed to attack thereafter.
+  A loyal lieutenant retreats if it has not committed to attack at the
+  end of the last round.
+
+  <h5 class="w3-text-teal">Messages</h5>
+  A message is an attack message from the general or a commitment to
+  attack by a lieutenant. We call commitment messages
+  attack messages. An attack message is identified by the
+  agent (general or lieutenant) that created the message.
+
+  <h5 class="w3-text-teal">Evidence for Attack</h5>
+  A loyal lieutenant commits to attack on round \(r \geq 1 \), for the first
+  time, if the lieutenant has received an attack message from the
+  general and at
+  least \(r - 1\) lieutenants. 
+  When the lieutenant commits to attack it sends copies of these
+  messages, and its own attack message, to all
+  other lieutenants.
+  So, in round \(r+1\), each lieutenant receives an attack messages from
+  the general and at least \(r\)
+  lieutenants.
+  And so, all loyal lieutenants commit to attack in this round.
+
+
+  <h4 class="w3-text-teal">The Algorithm</h4>
+  We will use the tactic that is helpful in analyzing distributed
+algorithms that operate in rounds.
+We will prove properties of a sequential algorithm and then show the
+  equivalence of the sequential and distributed algorithms.
+The sequential algorithm is given next.
+
+<p class="w3-text-teal">Local Variables</p>
+  Associated with each lieutenant <code>C</code> are local variables
+<code>C.received</code> and <code>C.sent</code> which are sets of
+  agents (general or lieutenants).
+
+<code>C.received</code> is the set of agents from which 
+<code>C</code> has received attack messages (or their copies).
+
+<code>C</code> sends attack messages (or copies) from agents in
+<code>C.sent</code>.
+
+The symbol <code>g</code> represents the general.
+
+<h5 class="w3-text-teal">Initialization: Round 0</h5>
+<code>A.sent = {}</code> for all lieutenants
+<code>A</code>.
+
+<ol>
+  <li>
+  If the general is loyal and sends attack messages then the set of
+  agents from which a lieutenant has received attack messages is the
+  singleton set consisting of the general. So, for all
+  lieutenants <code>A</code>:
+  <br>
+  <code>A.received = {g}</code>
+  </li>
+  <li>
+  If the general is loyal and sends retreat messages then for all
+  lieutenants <code>A</code>:
+  <br>
+  <code>A.received = {}</code>
+  </li>
+  <li>
+  If the general is disloyal, then 
+  <code>A.received = {g}</code> for some lieutenants <code>A</code>,
+  and <code>A.received = {}</code> for the others.
+  </li>
+</ol>
+  
+The algorithm operates in a sequence of rounds with round-number
+<code>r</code> stepping from 1 to <code>t+1</code>. The
+<code>r</code>-th iteration for loyal agent <code>c</code> consists of
+the following two steps.
+<h5 class="w3-text-teal">Round <code>r > 0</code></h5>
+
+<p class="w3-text-teal">Step 1</p>
+<pre>
+if (|C.received| >= r) AND  (g in C.received):
+    C.commit = True
+    C.sent = C.received UNION {C}
+</pre>
+If <code>C.received</code> has messages that show that:  (1) the number of
+agents that have committed to attack on round
+<code>r</code> is at least <code>r</code>, and (2) the general has sent an
+attack message, then <code>C</code> commits to attack and sends these
+messages as well as an additional message that <code>C</code> has
+committed to attack.
+
+<p class="w3-text-teal">Step 2</p>
+<pre>
+C.received = (
+    (UNION over all loyal agents B of B.sent)
+             UNION
+     an arbitrary subset of disloyal agents)
+</pre>
+<code>C</code> receives the messages sent by loyal lieutenants and messages
+sent by disloyal lieutenants.
+
+A disloyal lieutenant, <code>A</code>, can send messages to some lieutenants
+that <code>A</code> is committed to attack, and not send these messages
+to other lieutenants.
+
+Lieutenant <code>C</code> receives attack messages from an arbitrary subset
+of disloyal lieutenants.
+
+<p>
+Lieutenant <code>C</code> does not know which agents are loyal and
+which are disloyal.
+
+<code>C.received</code> is the set of all messages sent to
+<code>C</code> regardless of whether the senders are loyal or
+disloyal.
+
+
+
+<h3 class="w3-text-teal">Proof of Correctness</h3>
+<h5 class="w3-text-teal">Case 1: General is loyal and sends attack
+messages</h5>
+In this case, at the start round 1, <code>C.received = {g}</code>.
+
+So, the if-clause in step 1 of round 1 is True, and therefore all
+loyal lieutenants commit to attack at the end of round 1.
+
+<h5 class="w3-text-teal">Case 2: General is loyal and sends retreat
+messages</h5>
+A disloyal lieutenant cannot forge the general's signature, and so it is
+impossible for any lieutenant to have a copy of an attack message from the
+general.
+Therefore the if-clause of step 1 is never satisfied, and so no loyal
+lieutenant commits to attack in any step.
+
+<h5 class="w3-text-teal">Case 3: General is disloyal</h5>
+
+<p class="w3-text-teal">Part 1</p>
+We first show that if any loyal lieutenant commits on round
+<code>r</code> then all loyal lieutenants commit by the end of round
+<code>r+1</code>.
+
+<p>
+A loyal lieutenant <code>C</code> commits on round <code>r</code>
+exactly when the set <code>C.received</code> has at least
+<code>r</code> attack messages including one from the general.
+So, in round <code>r</code>, <code>C.sent</code> has at least
+<code>r+1</code> attack messages including one from the general.
+Therefore, the if-clause of step 1 evaluates to True in round
+<code>r+1</code>, and so all
+loyal lieutenants commit by the end of round <code>r+1</code>.
+
+<p>
+Therefore, if any loyal lieutenant commits by the end of round
+<code>t-1</code> then all loyal lieutenants commit by the end of round
+<code>t</code>.
+
+<p class="w3-text-teal">Part 2</p>
+We next show that if no loyal lieutenant has committed by the end of
+round <code>t-1</code> then no loyal lieutenant commits in round
+<code>t</code>.
+
+<p>
+<code>C.sent = {}</code> at the end
+of round <code>t-1</code> if no loyal lieutenant has committed to
+attack.
+Therefore in round <code>t</code>,
+<code>C.received</code> is an 
+arbitrary subset of disloyal lieutenants.
+There are at most <code>t-1</code> disloyal lieutenants because there
+are at most <code>t</code> disloyal agents, and the general is
+disloyal.
+So, on round <code>t</code>, the if-clause of step 1 evaluates to False.
+<p>
+
+<p class="w3-text-teal">Part 3</p>
+From parts 1 and 2, by the end of
+round <code>t</code>, either all loyal lieutenants commit, or no loyal
+lieutenant commits.
+
+
+<h3 style="color:red;">Example</h3>
+
+The figure below illustrates a situation in which a loyal lieutenant C commits to
+attack on round 3, if it hasn't already committed to attack on rounds
+1 and 2.
+The figure shows C getting attack messages (red boxes) signed by the
+general and lieutenants A and B on round 2. The general and
+lieutenants A and B may be disloyal or loyal.
+
+    <figure>
+    <img src="Slide02.jpg" alt="Fig2" style="width:100%">
+    <figcaption>Fig.2: Example of a lieutenant committing to attack</figcaption>
+</figure>
+
+ 
+
+<p>
+ Because C is loyal it follows the algorithm, and C
+commits to attack at the end of round 3 because C receives a signed attack
+ message from the general and signed attack messages from two
+ different lieutenants.
+So, in round 3, C broadcasts copies of attack messages
+signed by the general and attack
+messages signed by A and B and attack messages, and also an attack
+ message signed by C itself. All loyal
+lieutenants commit to attack in round 4 because they receive attack
+messages signed by the general and 3 different lieutenants (A, B, C).
+
+
+
+<h4 style="color:blue;">Review</h4>
+<ol>
+  <li>
+  Assume that you are explaining the algorithm to someone who hasn't
+  taken a course on distributed computing. How would you explain to
+  this person that even if the general and 999 lieutenants are
+  disloyal, and only 2 lieutenants are loyal, the loyal lieutenants
+  reach a consensus after round 100? 
+  (Remember the first round is round 0.)
+  <li>
+  Will the algorithm work if at most one lieutenant could modify
+  written messages, and all the other lieutenants followed the
+  protocol, i.e. these lieutenants could copy but not modify
+  messages. 
+  </li>
+</ol>
+<!--Start Footer--------------------------------------->
+
+    <hr class="new1">
+      <p>K. Mani Chandy,
+      Emeritus Simon Ramo Professor,
+      California Institute of Technology</p>
+    
+</footer>
+    
+
+
+<!-- END MAIN -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+</script>
+
+</body>
+</html>

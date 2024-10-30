@@ -1,0 +1,369 @@
+<title>DistributedSystemModels/BasicsFAQ.html</title>
+
+<!------------- Start Heading -------------------------------->
+<!DOCTYPE html>
+
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/w3css/4/w3.css">
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css?family=Roboto">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/lib/w3-theme-blue.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
+.w3-sidebar {
+  z-index: 3;
+  width: 250px;
+  top: 43px;
+  bottom: 0;
+  height: inherit;
+}
+/* Thick blue border */
+hr.new2 {
+  border: 2px solid blue;
+}
+/* blue border */
+hr.new1 {
+  border: 2px solid blue;
+}
+</style>
+
+
+<body>
+
+
+<div class="w3-top">
+<div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+  
+  <a class="w3-bar-item w3-button w3-right w3-hide-large
+  w3-hover-white w3-large w3-theme-l1"
+  href="javascript:void(0)"
+  onclick="w3_open()">
+  <i class="fa fa-bars"></i></a>
+
+  <a href="../index.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Distributed Algorithms
+  </a>
+
+  <a href="../table_of_contents.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Contents
+  </a>
+
+  <a href="../cross_reference.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Index
+  </a>
+    
+  </div>
+  </div>
+  
+  <script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+  
+<div class="w3-row w3-padding-64">
+<div class="w3-twothird w3-container">
+
+
+<!---------------------------------------------------------------->
+    <h1 class="w3-text-teal">Basics: FAQ</h1>
+<!----------------------------------------------------------------->
+
+  <!----------------------------------------------------------------->
+  <p class="w3-text-teal">Why use such a simplistic model?</p>
+  <!----------------------------------------------------------------->
+  The model is indeed simplistic; however, it is adequate for describing
+  and reasoning about many of the algorithms described in the first
+  part of this course.
+
+  We introduce other models later.
+
+  We use the simplest model adequate for the problem at hand.
+
+  <p>
+  We point out the model's weaknesses and we introduce other models as
+  needed to deal with different problems.
+
+
+  
+  <!----------------------------------------------------------------->
+  <p class="w3-text-teal">Can an agent refuse to receive a message?</p>
+<!----------------------------------------------------------------->
+  In this model an agent cannot refuse to receive a message.
+
+  If a channel is not empty then a message from the channel can be
+  delivered to the agent <i>independent of the state of the agent</i>.
+  
+
+<p>
+ Suppose you want to design an algorithm in which an agent
+  <code>X</code> refuses to receive messages from an agent
+  <code>Z</code> until it first receives a message from an agent
+  <code>Y</code>.
+
+  How would you use this model?
+
+  <p>
+
+In our model, agent <code>X</code> has to receive the message from
+  <code>Z</code> in every state of <code>X</code>.
+
+  <p>
+  Agent <code>X</code> can copy the message from <code>Z</code> into a
+  local queue -- a local variable of <code>X</code> -- and process the
+  message only after receiving the message from <code>Y</code>.
+  
+
+  
+  <!----------------------------------------------------------------->
+  <p class="w3-text-teal">Can a full channel block a sender from
+  sending more messages?</p>
+<!----------------------------------------------------------------->
+In the model a sender is never blocked from sending a message.
+
+<p>
+How could this model be used to analyze a system in which a channel
+has a maximum size, and
+when a channel is full it cannot accept messages?
+
+<p>
+Our model assumes that channels have unlimited capacity.
+
+We can represent a situation in which channels have limited capacity
+in the following way.
+
+An agent has a local output queue into which the agent puts messages
+when the channel is full.
+
+Messages from this output queue are sent on the channel when the
+channel stops being full.
+
+
+
+
+    
+  <!----------------------------------------------------------------->
+  <p class="w3-text-teal">Can you represent systems in which agents
+  are created and deleted in the model?</p>
+  <!----------------------------------------------------------------->
+  The model doesn't have features that allow agents to be created and
+  deleted.
+
+<p>
+  You may want to implement a system in which agents are created and
+  deleted infinitely often. 
+
+  In this case the network of agents changes over time in an arbitrary
+  fashion. 
+
+  The model doesn't represent such systems.
+
+<p>
+A work around for the case in which agents are created or deleted a
+finite number of times is as follows.
+
+The network of agents in the model is made large enough to include
+agents that have not been created as yet and also include agents that
+have been deleted.
+
+An agent that has not been created is represented by an agent that is
+idle, i.e., one that doesn't receive messages.
+
+An agent this is deleted is represented in the same way.
+  
+
+
+    
+  <!----------------------------------------------------------------->
+  <p class="w3-text-teal">Can an agent process background jobs that
+  are interrupted when messages arrive?</p>
+<!----------------------------------------------------------------->
+
+No, there are no interruptions in the model.
+
+After an agent is initiated it does nothing but execute receives or wait to execute
+receives.
+
+When an agent is executing a receive it is not interrupted by the
+arrival of another message.
+
+
+  
+  <!----------------------------------------------------------------->
+  <p class="w3-text-teal">How do you represent channels that are not
+  first in first out?</p>
+  <!----------------------------------------------------------------->
+We use queues to represent states of first in first out channels, and
+  we use other data structures -- such as multisets -- to represent
+  states of other types of channels. 
+
+<p>
+Later we describe algorithms with different types of channels.
+
+  For example, the state of a channel in which messages may overtake
+  each other is a multiset or bag.
+
+  A message is sent on a channel by adding the message to the
+  multiset.
+
+  A nonempty multiset may deliver any message in the mutliset to the
+  receiving agent.
+
+  <p>
+  Lossy channels, and channels in which messages have priorities, are
+  also modeled by defining channel states appropriately.
+
+        
+  <!----------------------------------------------------------------->
+  <p class="w3-text-teal">Can the model represent sequential
+  composition of distributed computations?</p>
+  <!----------------------------------------------------------------->
+Yes.
+
+<p>
+There are problems in which we would like to start a distributed
+computation <code>P</code>; wait for <code>P</code> to finish, and
+then start another distributed computation <code>Q</code>.
+
+We want a barrier between <code>P</code> and <code>Q</code>.
+
+<p>
+A barrier can be implemented in several ways.
+
+An agent, say a <i>coordinator</i> agent, sends messages to all agents to start
+<code>P</code>.
+
+The coordinator then detects termination of <code>P</code>; we discuss
+termination detection algorithms later.
+
+After detecting termination of <code>P</code> the coordinator sends
+messages to all agents to start <code>Q</code>.
+  
+  <!----------------------------------------------------------------->
+  <p class="w3-text-teal">Can the model represent agents that make state transitions
+  without receiving messages? </p>
+<!----------------------------------------------------------------->
+No, the model does not represent agents that make state transitions
+without receiving messages.
+
+The effect of a state transition without receiving a message can be
+simulated by an agent sending itself a message and carrying out the
+transition when it receives a message from itself.
+
+<p>
+Some books on distributed systems allow agents to make <i>internal</i>
+  state transitions -- these are transitions without receiving
+messages.
+
+For example, an agent that is computing using a set of files may
+  transition to a state in which it no longer needs those files; this
+transition occurs without the agent receiving a message.
+
+Can the model represent such internal state transitions?
+
+<p>
+Internal state transitions are represented by transitions in which an
+agent receives a message from itself.
+
+  We represent an internal state change by having the agent
+  send a message to itself; the agent makes a state change when it
+receives the message.
+
+<p>
+For example, an agent that is computing using a set of files sends a
+message "<i>finished using files</i>" to itself, and when the message
+arrives, the agent changes state to one in which it no longer using
+the files.
+
+  <p>
+  Representing internal state changes in this way is an artifice;
+  however, the artifice allows us to use a simple model in which a
+  state change occurs only when a message is delivered.
+
+
+  <!----------------------------------------------------------------->
+  <p class="w3-text-teal">Local clocks can be synchronized using NTP
+  and other protocols. Why do you assume that clocks aren't synchronized? </p>
+<!----------------------------------------------------------------->
+Local clocks can, indeed, be synchronized very accurately; however, we
+  do not assume that they are perfect.
+
+<p>
+We use agents' local clocks for evaluating algorithm performance but
+not for proving correctness because even a small drift can cause race
+conditions. 
+
+<p>
+Consider an algorithm in which one agent carries out a computation
+starting at 1pm and another agent carries out a computation starting at 2pm.
+
+When we prove the correctness of our algorithms, we allow for the
+unlikely possibility that that the agent starting its 
+computation at 2pm does so before the agent that starts a 1pm.
+
+For evaluating performance, however, we assume that the agent that starts a 1pm
+usually does so before the agent that starts at 2pm.
+
+
+<h5 class="w3-text-teal">Next</h5>
+The next three webpages continue the description of a model of
+distributed systems and point out its strengths and limitations.
+
+The next page introduces <a href="Model.html">
+Timelines and Dataflow.</a> 
+
+
+
+<!--Start Footer--------------------------------------->
+
+    <hr class="new1">
+      <p>K. Mani Chandy,
+      Emeritus Simon Ramo Professor,
+      California Institute of Technology</p>
+    
+</footer>
+    
+
+
+<!-- END MAIN -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+</script>
+
+</body>
+</html>

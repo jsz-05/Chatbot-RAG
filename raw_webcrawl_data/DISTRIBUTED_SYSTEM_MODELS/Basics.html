@@ -1,0 +1,402 @@
+<title>DistributedSystemModels/Basics.html</title>
+
+<!------------- Start Heading -------------------------------->
+<!DOCTYPE html>
+
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/w3css/4/w3.css">
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css?family=Roboto">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/lib/w3-theme-blue.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
+.w3-sidebar {
+  z-index: 3;
+  width: 250px;
+  top: 43px;
+  bottom: 0;
+  height: inherit;
+}
+/* Thick blue border */
+hr.new2 {
+  border: 2px solid blue;
+}
+/* blue border */
+hr.new1 {
+  border: 2px solid blue;
+}
+</style>
+
+
+<body>
+
+
+<div class="w3-top">
+<div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+  
+  <a class="w3-bar-item w3-button w3-right w3-hide-large
+  w3-hover-white w3-large w3-theme-l1"
+  href="javascript:void(0)"
+  onclick="w3_open()">
+  <i class="fa fa-bars"></i></a>
+
+  <a href="../index.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Distributed Algorithms
+  </a>
+
+  <a href="../table_of_contents.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Contents
+  </a>
+
+  <a href="../cross_reference.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Index
+  </a>
+    
+  </div>
+  </div>
+  
+  <script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+  
+<div class="w3-row w3-padding-64">
+<div class="w3-twothird w3-container">
+
+
+<!---------------------------------------------------------------->
+    <h1 class="w3-text-teal">Basics</h1>
+<!----------------------------------------------------------------->
+  </p>
+
+  <p class="w3-text-red">
+  This page describes a simple model and notation for distributed
+  algorithms.
+
+  The model is adequate for describing a collection of algorithms.
+
+  Other models are introduced later.
+  </i>
+  </p>
+
+  <!----------------------------------------------------------------->
+  <h3 class="w3-text-teal">Models of Distributed Systems</h3>
+  <!----------------------------------------------------------------->
+  Distributed systems are complex.
+
+  A banking information system supports actions
+  in ATM machines, branch offices, and fraud analysis centers.
+
+  An earthquake monitoring system has thousands of sensors and agents
+  carrying out complex calculations.
+  
+<p>
+  
+  A model of a distributed system is an abstraction that ignores some
+  features.
+
+  Different models are used to design algorithms in different
+  settings;
+
+  for example, a model of a system in which messages may be
+  corrupted is different from one in which messages are incorruptible.
+
+
+  <p>
+  We begin with a simple model and notation.
+  Examples of some distributed algorithms are given in Python using a
+  simulator and using software libraries such as a
+  <a
+  href="https://www.rabbitmq.com/tutorials/tutorial-one-python.html">
+  Python implementation</a>
+  of the
+  <a
+  href="https://en.wikipedia.org/wiki/Advanced_Message_Queuing_Protocol">
+  Advanced Message Queuing Protocol (AMQP).
+  </a>
+
+  
+  <!----------------------------------------------------------------->
+  <h3 class="w3-text-teal">A Simple Model: A Network of Agents and Channels</h3>
+  <!----------------------------------------------------------------->
+<p>
+
+A distributed system consists of a set of agents and a set of
+channels.
+  
+  A channel is directed from one agent to one agent.
+
+  A channel from an agent <code>P</code> to an agent <code>Q</code> is
+called an output of <code>P</code> and an input of <code>Q</code>.
+
+The ordered pair <code>(P, Q)</code> represents the channel from
+<code>P</code> to <code>Q</code>.
+  
+  An agent can send messages on its output channels and receive
+  messages on its input channels.
+
+<p>
+A system is represented by a
+<a href="https://en.wikipedia.org/wiki/Directed_graph">
+directed graph
+</a> in which vertices
+represent agents and edges represent channels.
+The graph is called a <i>network of agents.</i>
+
+<p>
+Figure 1 shows a network of 4 agents: <code>pos</code>,
+<code>neg</code>, <code>sum</code>, and <code>result</code>.
+
+The network has 3 edges: <code>(pos, sum)</code>, <code>(neg, sum)</code>,
+and <code>(sum, result)</code>.
+
+   <figure>
+    <img
+    src="DistributedSystemModels/DistributedSystemModels.020.jpeg"
+    alt="Fig1" style="width:60%"> 
+    <figcaption>Fig.1: Agent Network of the Example</figcaption>
+</figure>
+
+
+<p>
+A distributed system is initiated with sets of agents and channels
+  that remain unchanged. 
+
+Agents and channels are not created or deleted during a computation.
+
+
+
+<!---------------------------------------------------->
+<h4 class="w3-text-teal">Message Communication: Channels</h4>
+<!----------------------------------------------------------------->
+
+The state of a channel is a
+<a href="https://en.wikipedia.org/wiki/Queue_(abstract_data_type)">
+queue</a> consisting of the sequence of
+messages in the channel -- these are the messages that have been sent
+on the channel and that have not been received.
+
+<p>
+An agent sends a message by appending the message to the tail (rear)
+of the queue.
+
+A message from a nonempty queue is delivered to an agent by removing
+the message from the head (front) of the queue, and calling the
+<code>receive</code> function of the agent.
+
+<p>
+Messages are not lost or modified in channels.
+Every message sent is received.
+Message delays are arbitrary (but finite).
+
+<p>
+A system has the following property: For all \(n\),
+the \(n\)-th message received on a channel is the \(n\)-th message
+sent on the channel, and the \(n\)-th message is received on a channel
+only after the \(n\)-th message is sent on the channel.
+
+
+<!---------------------------------------------------->
+<h4 class="w3-text-teal">Agents</h4>
+<!---------------------------------------------------->
+An agent is an object that sends and receives messages.
+
+An agent is a sequential program that has two parts:
+(1) a part that initializes
+variables and output channels of the agent and
+(2) a function
+<pre>
+receive(message, sender)
+</pre>
+called a callback function in
+<a href=
+"https://www.rabbitmq.com/tutorials/tutorial-one-python.html">
+message queuing libraries.
+</a>
+
+<p class="w3-text-teal">Delivering a message in a channel to an agent</p>
+If an agent has a nonempty input channel then the <code>receive</code>
+function of the agent is called where <code>message</code> is the
+message at the head of the channel and <code>sender</code> is the
+agent that sent the message.
+
+The message at the channel head is removed and processed by the agent.
+
+
+<p>
+A <code>receive</code> function must not be recursive: an agent cannot
+receive a new message while it is executing a receive on a previous
+message. 
+
+Every execution of <code>receive</code> must terminate.
+
+<p>
+An agent may have many nonempty input channels but the agent processes
+only one message at a time. An agent is not interrupted while it
+is executing a <code>receive</code>. Messages that arrive while an
+agent is executing a <code>receive</code> remain in channels.
+
+
+<p class="w3-text-teal">Sending a message on a channel by an agent</p>
+An agent sends a message by executing
+<pre>
+send(message, receiver)
+</pre>
+The first parameter of <code>send</code> is the message that is sent,
+and the second paramenter is the agent to which the message is sent.
+
+Execution of this statement places the message in the output channel
+directed from the sender to the receiver.
+
+Statements that send messages appear in the <code>receive</code>
+function of the agent.
+
+An agent sends messages in response to messages that it receives.
+
+
+See <a href="../CODE_EXAMPLES">examples</a>.
+
+
+
+<!-------------------------------------------------->
+<h4 class="w3-text-teal">The State of a System</h4>
+The state of a system is given by the states of its agents and
+channels.
+
+We represent a system state as a tuple with an element of the tuple
+for each agent and each channel.
+
+<p>
+The state of an agent is given by the values of its variables
+(including its <a
+href="https://en.wikipedia.org/wiki/Program_counter"> program
+counter</a>).
+
+An agent's state changes while it executes its <code>receive</code>
+function.
+
+An agent's state remains unchanged while it is idle, waiting to
+execute a <code>receive</code>.
+
+<p>
+The state of a channel is the sequence of messages sent on the channel
+that have not as yet been delivered, and the channel state changes when a message is
+sent on the channel or a message in the channel is delivered.
+
+
+
+<!----------------------------------------------->
+<h4 style="color:red;">Example of an Agent</h4>
+
+This is an example of an agent, <code>sum_pos_neg</code>,
+that receives messages from agents
+<code>pos</code> and <code>neg</code>,
+and sends messages to agent <code>results</code>.
+
+See an <a href="../CODE_EXAMPLES/SumPosAndNeg.py">example</a>
+of an implementation in Python.
+
+<p>
+
+The statements before the <code>receive</code> function specify the
+initial values of variables and output channels of the agent.
+
+The initial state of an output channel is an empty queue unless it is assigned
+a different value.
+
+In this example, the initial state is <code>sum = 0</code> and the
+agent's output channels are empty initially.
+
+
+
+
+<pre>
+# Initialization
+sum = 0
+
+# Callback function
+def receive(message, sender):
+   if sender == pos:
+       sum = sum + message
+   else:
+       sum = sum - message
+   send(sum, results)
+</pre>
+
+If the agent receives a message from agent <code>pos</code> then the
+agent increments <code>sum</code> by the contents of the message and sends the
+resulting value of <code>sum</code> to the agent <code>results</code>.
+
+The agent takes similar actions when it receives a message from
+<code>neg</code> except that it decrements <code>sum</code>.
+
+
+<!---------------------------------------->
+<h5 class="w3-text-teal">Next</h5>
+<!---------------------------------------->
+
+The next three webpages continue the description of a model of
+distributed systems and point out its strengths and limitations.
+
+The next page introduces <a href="Model.html">
+Timelines and Dataflow.</a> 
+
+<p>
+<a href="BasicsFAQ.html">Frequenty Asked Questions</a>
+
+
+
+<!--Start Footer--------------------------------------->
+
+    <hr class="new1">
+      <p>K. Mani Chandy,
+      Emeritus Simon Ramo Professor,
+      California Institute of Technology</p>
+    
+</footer>
+    
+
+
+<!-- END MAIN -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+</script>
+
+</body>
+</html>

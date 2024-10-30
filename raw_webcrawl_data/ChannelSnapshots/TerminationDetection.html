@@ -1,0 +1,289 @@
+<title>TerminationDetection</title>
+<!------------- Start Heading -------------------------------->
+<!DOCTYPE html>
+
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/w3css/4/w3.css">
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css?family=Roboto">
+
+<link rel="stylesheet"
+href="https://www.w3schools.com/lib/w3-theme-blue.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
+.w3-sidebar {
+  z-index: 3;
+  width: 250px;
+  top: 43px;
+  bottom: 0;
+  height: inherit;
+}
+/* Thick blue border */
+hr.new2 {
+  border: 2px solid blue;
+}
+/* blue border */
+hr.new1 {
+  border: 2px solid blue;
+}
+</style>
+
+
+<body>
+
+
+<div class="w3-top">
+<div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+  
+  <a class="w3-bar-item w3-button w3-right w3-hide-large
+  w3-hover-white w3-large w3-theme-l1"
+  href="javascript:void(0)"
+  onclick="w3_open()">
+  <i class="fa fa-bars"></i></a>
+
+  <a href="../index.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Distributed Algorithms
+  </a>
+
+  <a href="../table_of_contents.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Contents
+  </a>
+
+  <a href="../cross_reference.html"
+  class="w3-bar-item w3-button w3-hide-small w3-hover-white">
+  Index
+  </a>
+    
+  </div>
+  </div>
+  
+  <script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+  
+<div class="w3-row w3-padding-64">
+<div class="w3-twothird w3-container">
+
+<!--------------------------------------------------------->
+<h1 class="w3-text-teal">Termination Detection</h1>
+<!--------------------------------------------------------->
+
+
+  <!------------------------------------------------------------------->
+  <p class="w3-text-red">
+  A distributed computation has terminated when all agents are idle
+  and all channels are empty.
+
+  A termination detection algorithm is executed by the operating
+  system to determine whether a client computation has terminated.
+
+  </p>
+  
+  
+
+
+  <h3 class="w3-text-teal">Problem Definition</h3>
+<p>
+  A computation terminates in states in which all
+  channels are empty and all agents are waiting to receive messages.
+
+  An agent is said to be <i>active</i> while it is processing a
+  message and <i>idle</i> while it is waiting to process a message.
+
+  A terminated state is one in which all agents are idle and all
+  channels are empty.
+
+  <p>
+  Let \(C_{s}\) and \(C_{r}\) be the numbers of messages 
+  sent and received (respectively) on channel \(C\).
+
+  A computation is in a terminated state exactly
+  when:
+  <ol>
+    <li>
+    All agents are idle and
+    </li>
+    <li>
+    for all channels \(C\):  \(\; C_{s} = C_{r}\).
+    </li>
+  </ol>
+
+  The problem is to design an algorithm that detects whether the
+  computation is in a terminated state.
+  
+  <!----------------------------------------------------------------------------->
+  <h4 class="w3-text-teal">How Should You Solve the Problem?</h4>
+  <!----------------------------------------------------------------------------->
+
+  <p class="w3-text-teal">Strategy</p>
+
+  A strategy to solve detection problems is to start with the
+  <a href="ChannelSnapshots.html">general detection algorithm</a> and
+  then explore optimizations by using
+  <a href="DISTRIBUTED_SYSTEM_MODELS/Timelines.html">
+  properties of cuts.</a>
+  
+  Let's explore optimizations.
+
+  <p>
+  The algorithm detects whether a channel is empty and it can do so
+  given the numbers of messages sent and received on the channel
+  without information about message contents.
+
+  What <a href="DISTRIBUTED_SYSTEM_MODELS/Timelines.html">
+  properties of cuts</a>
+  come to mind to help us design an algorithm based on message counts?
+
+  <p>
+  We use
+  <a href="DISTRIBUTED_SYSTEM_MODELS/Timelines.html">
+  "Cut based on Counts of Messages Sent and Received,"</a>
+  which is given again below.
+
+<p>
+There exists a cut <code>(past, future)</code> exactly when the
+following two conditions hold:
+
+<ol>
+  <li>
+  For all \(C\):  \(\; C_{s} \geq C_{r}\),
+  <p>
+  where
+  \(C_{s}\) and \(C_{r}\) are the numbers of messages sent and
+  received, respectively, on channel \(C\), in <code>past</code>.
+  </li>
+  <li>
+  If a step \(x\) of an agent is in <code>past</code> then steps at
+  that agent before \(x\) are also in <code>past</code>.
+  </li>
+</ol>
+
+The property suggests the following algorithm.
+
+
+
+  <h4 class="w3-text-teal">A Termination Detection Algorithm</h4>
+
+  <p class="w3-text-teal">Agent Actions</p>
+  When an agent changes state from active to idle the agent sends a
+  message to the observer. 
+
+  This message contains \(C_{s}\) for each output channel and
+  \(C_{r}\) for each input channel of the agent.
+
+
+  <p class="w3-text-teal">Observer Actions</p>
+  The observer keeps only the latest message that it receives from
+  each agent.
+  
+  For each channel \(C\), let \(C_{s}^{*}\) and \(C_{r}^{*}\) be the
+  latest value of \(C_{s}\) and \(C_{r}\), respectively, that the
+observer has received.
+
+
+  
+<p class="w3-text-teal">Initial Condition</p>
+All agents are idle.
+
+\(C_{s}^{*}\) and \(C_{r}^{*}\) are the numbers of messages sent and
+received (respectively) on channel \(C\) for all \(C\).
+
+<p class="w3-text-teal">Termination Detection</p>
+
+<hr class="new2">  
+  <p style="color:blue;">
+  The observer detects computation has terminated if
+  for all channels \(C\): \(C_{s}^{*} = C_{r}^{*}\).
+</p>
+<hr class="new2">  
+
+<!-------------------------------------------------------->
+<h5 class="w3-text-teal">Proof of Correctness</h5>
+<!-------------------------------------------------------->
+
+  <p>
+  We first prove that if the observer detects that the computation has
+terminated then the computation has indeed terminated.
+
+<p>
+Since the observer has detected termination, for each channel \(C\),
+either \(C_{s}^{*} = C_{r}^{*}\) initially, or the observer received
+messages containing \(C_{s}^{*}\) and \(C_{r}^{*}\) such that
+\(C_{s}^{*} = C_{r}^{*}\).
+
+
+<p>
+Let<code>(past, future)</code> be a partition of the steps of the
+  computation where <code>past</code> consists of steps at an agent
+  before the agent sent the messages to the observer containing
+\(C_{s}^{*}\) and 
+\(C_{r}^{*}\) for channels \(C\) incident on the agent. 
+(If the agent sends no messages to the observer 
+then the agent has no steps in <code>past</code>.)
+
+<p>
+From the property,
+<a href="../DISTRIBUTED_SYSTEM_MODELS/Timelines.html">
+"Cut based on Counts of Messages Sent and
+Received,"</a> <code>(past, future)</code> is a cut.
+
+<p>
+From the definition of terminated state it follows that the state at
+this cut is a terminated state.
+
+Termination is a stable property -- once computation has terminated it
+remains terminated.
+
+So, if the state at a cut of the computation
+is a terminated state then all succeeding states are terminated states.
+
+<p>
+Next we prove that if the computation terminates then the observer
+detects termination.
+
+The last message sent by each agent has counts \(C_{s}^{*}\) and
+\(C_{r}^{*}\) of the numbers of messages sent and received (respectively)
+for each of its output channels \(C\).
+
+Because these are the last messages sent when the algorithm terminates
+it follows that \(C_{s}^{*} = C_{r}^{*}\) for all \(C\).
+
+
+
+
+<h3 class="w3-text-teal">Next</h3>
+Next
+<a href="DatabaseDeadlockDetection.html">database deadlock
+detection
+</a>
+
+
+
+<!--Start Footer--------------------------------------->
+
+    <hr class="new1">
+      <p>K. Mani Chandy,
+      Emeritus Simon Ramo Professor,
+      California Institute of Technology</p>
+    
+</footer>
+    
+
+
+<!-- END MAIN -->
+</div>
+
+
+</body>
+</html>

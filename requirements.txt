@@ -1,0 +1,14 @@
+fastapi
+langchain
+langchain_openai
+langchain-community
+pydantic
+enum34
+openai
+huggingface-hub
+sentence-transformers
+chromadb
+python-dotenv
+scrapy  # assuming 'scrape_website' is using Scrapy for crawling
+beautifulsoup4  # if 'parse_website' uses BeautifulSoup for parsing
+fastapi[all]  # includes CORS middleware and other optional dependencies

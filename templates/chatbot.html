@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distributed Computing Chatbot</title>
+    <!-- Include Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #FFFFFF; /* Default to light mode (dark colors) */
+            color: #000000;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            text-align: center;
+            color: #58a6da;
+        }
+        #chatbox {
+            flex-grow: 1;
+            border: 1px solid #333;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #F0F0F0; /* Default to light mode (dark colors) */
+            color: #000000;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .user {
+            text-align: right;
+            background-color: #2C3E50;
+            color: #90CAF9;
+            margin-left: 20%;
+        }
+        .bot {
+            text-align: left;
+            background-color: #34495E;
+            color: #A5D6A7;
+            margin-right: 20%;
+        }
+        .input-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        #userInput {
+            flex-grow: 1;
+            background-color: #F0F0F0; /* Default to light mode (dark colors) */
+            color: #000000;
+            border: 1px solid #333;
+            padding: 10px;
+            border-radius: 4px 0 0 4px;
+        }
+        button {
+            background-color: #3498DB;
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 0 4px 4px 0;
+        }
+        button:hover {
+            background-color: #2980B9;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #F0F0F0; /* Default to light mode (dark colors) */
+            color: #888888;
+            font-size: 0.8em;
+            width: 100%;
+            max-width: 782px;
+            margin: 0 auto;
+            transition: background-color 0.3s, color 0.3s;
+            border-radius: 6px;
+        }
+        .toggle-button {
+            background-color: #3498DB;
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 0px;
+            margin-left: 0px; /* Add margin to the right of the toggle button */
+        }
+        .send-button {
+            background-color: #2bb474;
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 25px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 0 4px 4px 0; 
+            margin-left: 0px; 
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Distributed Computing Chatbot (Alpha)</h1>
+        <div id="chatbox"></div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Type your message here">
+            <button class="toggle-button" onclick="toggleMode()">
+                <i class="fas fa-circle-half-stroke"></i> <!-- Font Awesome icon -->
+            </button>
+            
+            <button class="send-button" onclick="sendMessage()">Send</button>
+            
+        </div>
+    </div>
+    <footer>
+        Work in progress by Jeffrey Zhou. LLM trained on content from 
+        <a href="https://kmchandy.github.io/index.html" target="_blank" rel="noopener noreferrer">
+            https://kmchandy.github.io/index.html
+        </a> 
+        using Gemini 1.0 Pro API. 
+    </footer>
+                                
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('userInput').value;
+            if (userInput.trim() === '') return;
+
+            const chatbox = document.getElementById('chatbox');
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.textContent = userInput;
+            chatbox.appendChild(userMessage);
+            document.getElementById('userInput').value = '';
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const botMessage = document.createElement('div');
+                botMessage.className = 'message bot';
+                botMessage.innerHTML = data.response;  // Use innerHTML instead of textContent
+                chatbox.appendChild(botMessage);
+                chatbox.scrollTop = chatbox.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        document.getElementById('userInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function applyTheme(theme) {
+            const body = document.body;
+            const chatbox = document.getElementById('chatbox');
+            const userInput = document.getElementById('userInput');
+            const footer = document.querySelector('footer');
+
+            if (theme === 'dark') {
+                body.style.backgroundColor = '#121212';
+                body.style.color = '#E0E0E0';
+                chatbox.style.backgroundColor = '#1E1E1E';
+                chatbox.style.color = '#E0E0E0';
+                userInput.style.backgroundColor = '#1E1E1E';
+                userInput.style.color = '#E0E0E0';
+                footer.style.backgroundColor = '#1E1E1E';
+                footer.style.color = '#888';
+
+            } else {
+                body.style.backgroundColor = '#FFFFFF';
+                body.style.color = '#000000';
+                chatbox.style.backgroundColor = '#F0F0F0';
+                chatbox.style.color = '#000000';
+                userInput.style.backgroundColor = '#F0F0F0';
+                userInput.style.color = '#000000';
+                footer.style.backgroundColor = '#F0F0F0';
+                footer.style.color = '#888888';
+            }
+        }
+
+        function toggleMode() {
+            const currentTheme = localStorage.getItem('theme') === 'dark' ? 'light' : 'dark';
+            applyTheme(currentTheme);
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        // Apply the saved theme preference on initial load
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(savedTheme);
+    </script>
+</body>
+</html>
