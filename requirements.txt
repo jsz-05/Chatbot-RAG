@@ -1,6 +1,7 @@
 fastapi
 flask
 flask_cors
+gunicorn
 requests
 logging
 langchain
