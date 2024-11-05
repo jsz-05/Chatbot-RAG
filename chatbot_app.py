@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask import Flask, render_template, request, jsonify
 import logging
@@ -7,7 +8,7 @@ import requests  # Ensure this is imported
 app = Flask(__name__)
 CORS(app)  # Handle CORS issues
 
-API_URL = "http://127.0.0.1:8000/ask_question"
+API_URL = "https://chatbot-rag.onrender.com/ask_question"
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -39,5 +40,7 @@ def chat():
     return jsonify({'response': result})
 
 if __name__ == '__main__':
-    app.run()
+    # Use the PORT environment variable, defaulting to 5000 if it's not set
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
 
